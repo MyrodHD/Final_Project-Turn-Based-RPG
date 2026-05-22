@@ -59,7 +59,7 @@ namespace Movement_and_SpriteSheet_together
             for (int i = 0; i < _menuItems.Count; i++)
             {
                 Vector2 size = _font.MeasureString(_menuItems[i]);
-                _itemRectangles[i] = new Rectangle((int)pos.X, (int)pos.Y - (int)(size.Y / 2), (int)size.X + 8, (int)size.Y + 8);
+                _itemRectangles[i] = new Rectangle((int)pos.X, (int)pos.Y - (int)(size.Y / 2), (int)size.X + 10, (int)size.Y + 10);
                 pos.Y += _spacing;
             }
 

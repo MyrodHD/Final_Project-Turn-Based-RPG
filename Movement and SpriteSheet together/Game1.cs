@@ -92,17 +92,18 @@ namespace Movement_and_SpriteSheet_together
 
             _battleSystem = new BattleSystem();
 
-            _hero = new Hero("Hero", 30, 4, battleHeroTexture, battleHeroRect);
-
             _battleMenu = new BattleMenu(_battleFont, new List<string> { "Attack", "Heal" }, new Vector2(50, 260));
 
-            _playerFrameWidth = playerTexture.Width / 4;  
-            _playerFrameHeight = playerTexture.Height / 4; 
+            _playerFrameWidth = playerTexture.Width / 4;
+            _playerFrameHeight = playerTexture.Height / 4;
 
-            _encounters.Add(new Encounter(new Rectangle(220, 180, 48, 48), new Enemy("Goblin", 18, 3)));
-            _encounters.Add(new Encounter(new Rectangle(420, 260, 56, 56), new Enemy("Wolf", 20, 4)));
-            _encounters.Add(new Encounter(new Rectangle(80, 360, 48, 48), new Enemy("Bandit", 22, 5)));
+            //Below is where the hero and enemies are created for player to fight.
 
+            _hero = new Hero("Hero", 30, 4, battleHeroTexture, battleHeroRect);
+
+            _encounters.Add(new Encounter(new Rectangle(220, 180, 48, 48), new Enemy("Goblin", 16, 3)));
+            _encounters.Add(new Encounter(new Rectangle(420, 260, 56, 56), new Enemy("Wolf", 18, 3)));
+            _encounters.Add(new Encounter(new Rectangle(80, 360, 48, 48), new Enemy("Bandit", 20, 4)));
         }
 
         protected override void Update(GameTime gameTime)
@@ -153,6 +154,29 @@ namespace Movement_and_SpriteSheet_together
 
                     break;
 
+                case GameState.Level2:
+                    _movement.Update(gameTime);
+                    _particleSystem.Update(gameTime);
+
+                    if (_movement.currentDirection != Vector2.Zero)
+                    {
+                        _playerSprite.Update(gameTime);
+
+                        if (_movement.currentDirection.Y > 0)
+                            _playerSprite.currentRow = 0;
+                        else if (_movement.currentDirection.X < 0)
+                            _playerSprite.currentRow = 1;
+                        else if (_movement.currentDirection.X > 0)
+                            _playerSprite.currentRow = 2;
+                        else if (_movement.currentDirection.Y < 0)
+                            _playerSprite.currentRow = 3;
+                    }
+                    else
+                        _playerSprite.Reset();
+
+
+                    break;
+
                 case GameState.Controls:
                     if (Keyboard.GetState().IsKeyDown(Keys.R))
                         _currentState = GameState.MainMenu;
@@ -177,17 +201,6 @@ namespace Movement_and_SpriteSheet_together
 
                         }
                     }
-
-                    // allow quick keyboard shortcuts as well (Debug Reasons)
-                    //var kb = Keyboard.GetState();
-                    //if (kb.IsKeyDown(Keys.Space))
-                    //{
-                    //    _battleSystem.HeroAttack();
-                    //}
-                    //if (kb.IsKeyDown(Keys.H))
-                    //{
-                    //    _battleSystem.HeroHeal();
-                    //}
 
                     if (Keyboard.GetState().IsKeyDown(Keys.Space))
                     {
