@@ -56,6 +56,9 @@ namespace Movement_and_SpriteSheet_together
         private int _playerFrameWidth;
         private int _playerFrameHeight;
 
+        private EncounterManager _encounterManager;
+        private LevelManager _levelManager;
+
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
@@ -101,9 +104,11 @@ namespace Movement_and_SpriteSheet_together
 
             _hero = new Hero("Hero", 30, 4, battleHeroTexture, battleHeroRect);
 
-            _encounters.Add(new Encounter(new Rectangle(220, 180, 48, 48), new Enemy("Goblin", 16, 3)));
-            _encounters.Add(new Encounter(new Rectangle(420, 260, 56, 56), new Enemy("Wolf", 18, 3)));
-            _encounters.Add(new Encounter(new Rectangle(80, 360, 48, 48), new Enemy("Bandit", 20, 4)));
+            _encounterManager = new EncounterManager();
+            _levelManager = new LevelManager();
+
+            // Create's initial level encounters when the player starts the game (menu -> Start will switch)
+            _encounters = _encounterManager.GetEncountersForLevel(GameState.Level1);
         }
 
         protected override void Update(GameTime gameTime)
@@ -117,6 +122,11 @@ namespace Movement_and_SpriteSheet_together
             {
                 case GameState.MainMenu:
                     _menuManager.Update(gameTime, ref _currentState);
+
+                    if (_currentState == GameState.Level1 || _currentState == GameState.Level2)
+                    {
+                        LoadLevel(_currentState);
+                    }
                     break;
 
                 case GameState.Level1:
@@ -151,6 +161,14 @@ namespace Movement_and_SpriteSheet_together
                             break;
                         }
                     }
+                    
+                    // Check for level transitions
+                    if (_levelManager.TryGetTransition(_currentState, playerRect, out var newLevel, out var spawnPoint))
+                    {
+                        _currentState = newLevel;
+                        _movement = new MovementManager(spawnPoint, _particleSystem);
+                        _encounters = _encounterManager.GetEncountersForLevel(newLevel);
+                    }
 
                     break;
 
@@ -174,6 +192,26 @@ namespace Movement_and_SpriteSheet_together
                     else
                         _playerSprite.Reset();
 
+                    var playerRect2 = new Rectangle((int)_movement.position.X, (int)_movement.position.Y, _playerFrameWidth, _playerFrameHeight);
+                    foreach (var enc in _encounters)
+                    {
+                        if (enc.Active && enc.Hitbox.Intersects(playerRect2))
+                        {
+                            _battleSystem.BattleStart(_hero, enc.Enemy);
+                            enc.Active = false;
+                            _currentState = GameState.Battle;
+                            _battleStarted = true;
+                            break;
+                        }
+                    }
+
+                    // check transitions using LevelManager
+                    if (_levelManager.TryGetTransition(_currentState, playerRect2, out var newState, out var spawn))
+                    {
+                        _currentState = newState;
+                        _movement = new MovementManager(spawn, _particleSystem);
+                        _encounters = _encounterManager.GetEncountersForLevel(_currentState);
+                    }
 
                     break;
 
@@ -212,10 +250,33 @@ namespace Movement_and_SpriteSheet_together
                         _battleSystem.HeroHeal();
                     }
 
+                    // Award XP immediately when a win occurs (only once per battle)
+                    if (_battleSystem.State == BattleState.Win && _battleStarted)
+                    {
+                        int xp = _battleSystem.Enemy?.XPValue ?? 0;
+                        if (xp > 0)
+                            _hero.AddXP(xp);
+
+                        // prevent awarding more than once
+                        _battleStarted = false;
+                    }
+
                     if ((_battleSystem.State == BattleState.Win || _battleSystem.State == BattleState.Lose))
                     {
                         if (Keyboard.GetState().IsKeyDown(Keys.R))
-                            _currentState = GameState.Level1;
+                        {
+                            if (_battleSystem.State == BattleState.Lose)
+                            {
+                                // Player lost: return to main menu and reset the playable state so game must be started again.
+                                ResetGame();
+                                _currentState = GameState.MainMenu;
+                            }
+                            else
+                            {
+                                // Player won: return to level1 and reload its data
+                                _currentState = GameState.Level1;
+                            }
+                        }
 
                         _battleStarted = false;
                     }
@@ -253,6 +314,20 @@ namespace Movement_and_SpriteSheet_together
 
             }
 
+            if (_currentState == GameState.Level2)
+            {
+
+                _playerSprite.Draw(_spriteBatch, _movement.position);
+                _particleSystem.Draw(_spriteBatch);
+
+                foreach (var enc in _encounters)
+                {
+                    var color = enc.Active ? Color.Red * 0.6f : Color.Gray * 0.4f;
+                    _spriteBatch.Draw(rectangleTexure, new Rectangle(enc.Hitbox.X, enc.Hitbox.Y, enc.Hitbox.Width, enc.Hitbox.Height), color);
+                }
+
+            }
+
             if (_currentState == GameState.Battle)
             {
                 var hero = _battleSystem.Hero;
@@ -270,26 +345,33 @@ namespace Movement_and_SpriteSheet_together
 
                 if (_battleSystem.State == BattleState.Win || _battleSystem.State == BattleState.Lose)
                     _spriteBatch.DrawString(_battleFont, "Press R to Exit battle", new Vector2(50,305), Color.White);
+
+                // Draw HUD with Level / XP so you can verify XP changes while playing.
+                if (_hero != null && _currentState != GameState.MainMenu)
+                {
+                    string xpText = $"Level: {_hero.Level}   XP: {_hero.CurrentXP}/{_hero.XPToNextLevel}";
+                    _spriteBatch.DrawString(_battleFont, xpText, new Vector2(10, 10), Color.White);
+                }
             }
         
-
             _spriteBatch.End();
 
             base.Draw(gameTime);
         }
 
-        private class Encounter
+        private void LoadLevel(GameState level)
         {
-            public Rectangle Hitbox;
-            public Enemy Enemy;
-            public bool Active = true;
-
-            public Encounter(Rectangle hitbox, Enemy enemy)
-            {
-                Hitbox = hitbox;
-                Enemy = enemy;
-            }
+            _movement = new MovementManager(_levelManager.GetSpawnPointForLevel(level), _particleSystem);
+            _encounters = _encounterManager.GetEncountersForLevel(level);
         }
-
+        
+        private void ResetGame()
+        {
+            // Recreate hero and battle system so next playthrough starts fresh.
+            _hero = new Hero("Hero", 30, 4, battleHeroTexture, battleHeroRect);
+            _battleSystem = new BattleSystem();
+            _encounterManager = new EncounterManager();
+            // Movement and encounters will be reinitialized when the player selects "Start Game" from main menu.
+        }
     }
 }

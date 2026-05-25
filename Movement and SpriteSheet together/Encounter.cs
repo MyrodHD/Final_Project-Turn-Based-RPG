@@ -18,5 +18,6 @@ namespace Movement_and_SpriteSheet_together
             Hitbox = hitbox;
             Enemy = enemy;
         }
+
     }
 }

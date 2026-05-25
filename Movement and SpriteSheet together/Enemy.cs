@@ -11,16 +11,20 @@ namespace Movement_and_SpriteSheet_together
         private string _name;
         private int _HP;
         private int _attackPower;
+        private int _xpValue;
 
         public string Name => _name;
         public int HP => _HP;
         public int AttackPower => _attackPower;
 
-        public Enemy(string name, int HP, int attackPower)
+        public int XPValue => _xpValue;
+
+        public Enemy(string name, int HP, int attackPower, int xpValue = 5)
         {
             _name = name;
             _HP = HP;
             _attackPower = attackPower;
+            _xpValue = xpValue;
         }
 
         public void TakeDamage(int dmg)
