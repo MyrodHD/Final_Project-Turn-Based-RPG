@@ -20,6 +20,13 @@
 /processorParam:TextureFormat=Compressed
 /build:BattleFont.spritefont
 
+#begin BattleMenu.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:BattleMenu.spritefont
+
 #begin circle.png
 /importer:TextureImporter
 /processor:TextureProcessor

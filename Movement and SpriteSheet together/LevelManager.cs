@@ -9,8 +9,8 @@ namespace Movement_and_SpriteSheet_together
     public class LevelManager
     {
         // Configure transition zones and spawn points here
-        private readonly Rectangle _level1To2Zone = new Rectangle(750, 0, 10, 600);
-        private readonly Rectangle _level2To3Zone = new Rectangle(750, 0, 10, 600);
+        private readonly Rectangle _level1To2Zone = new Rectangle(815, 0, 10, 600);
+        private readonly Rectangle _level2To3Zone = new Rectangle(815, 0, 10, 600);
 
         private readonly Vector2 _level1Spawn = new Vector2(100, 100);
         private readonly Vector2 _level2Spawn = new Vector2(50, 50);
@@ -35,7 +35,7 @@ namespace Movement_and_SpriteSheet_together
                 case Game1.GameState.Level2:
                     if (playerRect.Intersects(_level2To3Zone))
                     {
-                        newLevel = Game1.GameState.Level1;
+                        newLevel = Game1.GameState.Level3;
                         spawnPoint = _level3Spawn;
                         return true;
                     }

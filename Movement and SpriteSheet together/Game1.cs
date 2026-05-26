@@ -46,6 +46,7 @@ namespace Movement_and_SpriteSheet_together
 
         SpriteFont _font;
         SpriteFont _battleFont;
+        SpriteFont _menuFont;
 
         Hero _hero;
 
@@ -82,6 +83,7 @@ namespace Movement_and_SpriteSheet_together
 
             _font = Content.Load<SpriteFont>("TitleFont");
             _battleFont = Content.Load<SpriteFont>("BattleFont");
+            _menuFont = Content.Load<SpriteFont>("BattleMenu");
 
             List<string> menuItems = new List<string> { "Start Game", "Controls" };
             
@@ -95,7 +97,7 @@ namespace Movement_and_SpriteSheet_together
 
             _battleSystem = new BattleSystem();
 
-            _battleMenu = new BattleMenu(_battleFont, new List<string> { "Attack", "Heal" }, new Vector2(50, 260));
+            _battleMenu = new BattleMenu(_menuFont, new List<string> { "Attack", "Heal" }, new Vector2(640, 290));
 
             _playerFrameWidth = playerTexture.Width / 4;
             _playerFrameHeight = playerTexture.Height / 4;
@@ -215,6 +217,48 @@ namespace Movement_and_SpriteSheet_together
 
                     break;
 
+                case GameState.Level3:
+                    _movement.Update(gameTime);
+                    _particleSystem.Update(gameTime);
+
+                    if (_movement.currentDirection != Vector2.Zero)
+                    {
+                        _playerSprite.Update(gameTime);
+
+                        if (_movement.currentDirection.Y > 0)
+                            _playerSprite.currentRow = 0;
+                        else if (_movement.currentDirection.X < 0)
+                            _playerSprite.currentRow = 1;
+                        else if (_movement.currentDirection.X > 0)
+                            _playerSprite.currentRow = 2;
+                        else if (_movement.currentDirection.Y < 0)
+                            _playerSprite.currentRow = 3;
+                    }
+                    else
+                        _playerSprite.Reset();
+
+                    var playerRect3 = new Rectangle((int)_movement.position.X, (int)_movement.position.Y, _playerFrameWidth, _playerFrameHeight);
+                    foreach (var enc in _encounters)
+                    {
+                        if (enc.Active && enc.Hitbox.Intersects(playerRect3))
+                        {
+                            _battleSystem.BattleStart(_hero, enc.Enemy);
+                            enc.Active = false;
+                            _currentState = GameState.Battle;
+                            _battleStarted = true;
+                            break;
+                        }
+                    }
+
+                    // check transitions using LevelManager
+                    if (_levelManager.TryGetTransition(_currentState, playerRect3, out var newStates, out var spawns))
+                    {
+                        _currentState = newStates;
+                        _movement = new MovementManager(spawns, _particleSystem);
+                        _encounters = _encounterManager.GetEncountersForLevel(_currentState);
+                    }
+                    break;
+
                 case GameState.Controls:
                     if (Keyboard.GetState().IsKeyDown(Keys.R))
                         _currentState = GameState.MainMenu;
@@ -328,6 +372,20 @@ namespace Movement_and_SpriteSheet_together
 
             }
 
+            if (_currentState == GameState.Level3)
+            {
+
+                _playerSprite.Draw(_spriteBatch, _movement.position);
+                _particleSystem.Draw(_spriteBatch);
+
+                foreach (var enc in _encounters)
+                {
+                    var color = enc.Active ? Color.Red * 0.6f : Color.Gray * 0.4f;
+                    _spriteBatch.Draw(rectangleTexure, new Rectangle(enc.Hitbox.X, enc.Hitbox.Y, enc.Hitbox.Width, enc.Hitbox.Height), color);
+                }
+
+            }
+
             if (_currentState == GameState.Battle)
             {
                 var hero = _battleSystem.Hero;
@@ -336,7 +394,10 @@ namespace Movement_and_SpriteSheet_together
                 _spriteBatch.Draw(battleHeroTexture, battleHeroRect, Color.Blue);
                 _spriteBatch.DrawString(_battleFont, $"HP: {hero.HP}", new Vector2(158, 240), Color.White);
                 _spriteBatch.DrawString(_battleFont, $"Enemy: {enemy.Name}  HP: {enemy.HP}", new Vector2(450, 190), Color.White);
-                _spriteBatch.DrawString(_battleFont, $"State: {_battleSystem.State}", new Vector2(50, 50), Color.Yellow);
+                
+                if (_battleSystem.State == BattleState.PlayerTurn || _battleSystem.State == BattleState.EnemyTurn)
+                    _spriteBatch.DrawString(_battleFont, $"Turn: {_battleSystem.State}", new Vector2(50, 50), Color.Yellow);
+                
                 _spriteBatch.DrawString(_battleFont, $"Action: {_battleSystem.LastAction}", new Vector2(50, 70), Color.White);
 
 

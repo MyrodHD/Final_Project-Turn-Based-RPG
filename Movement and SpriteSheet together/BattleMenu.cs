@@ -14,6 +14,7 @@ namespace Movement_and_SpriteSheet_together
         private List<string> _menuItems;
         private Vector2 _position;
         private int _spacing;
+        private int _spacingY = 30;
 
         private int _selectedIndex = 0;
         private KeyboardState _previousKeyboard;
@@ -25,7 +26,7 @@ namespace Movement_and_SpriteSheet_together
         public int SelectedIndex => _selectedIndex;
         public string SelectedItem => _menuItems[_selectedIndex];
 
-        public BattleMenu(SpriteFont font, List<string> menuItems, Vector2 position, int spacing = 40)
+        public BattleMenu(SpriteFont font, List<string> menuItems, Vector2 position, int spacing = 18)
         {
             _font = font;
             _menuItems = menuItems;
@@ -104,7 +105,8 @@ namespace Movement_and_SpriteSheet_together
             {
                 Color color = (i == _selectedIndex) ? selectedColor : normalColor;
                 spriteBatch.DrawString(_font, _menuItems[i], drawPos, color);
-                drawPos.Y += _spacing;
+                drawPos.Y += _spacingY;
+                drawPos.X += _spacing;
             }
         }
 

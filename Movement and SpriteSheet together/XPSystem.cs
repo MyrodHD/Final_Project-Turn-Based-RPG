@@ -11,8 +11,8 @@ namespace Movement_and_SpriteSheet_together
         public int Level { get; private set; } = 1;
         public int CurrentXP { get; private set; } = 0;
 
-        // Simple progression formula: base 10 XP + 5 per level above 1
-        public int XPToNextLevel => 10 + (Level - 1) * 5;
+        // Simple progression formula: base 10 XP + 6 per level above 1
+        public int XPToNextLevel => 10 + (Level - 1) * 6;
 
         public event Action<int>? OnLevelUp;
 
