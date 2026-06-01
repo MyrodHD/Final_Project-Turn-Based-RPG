@@ -66,7 +66,7 @@ namespace Movement_and_SpriteSheet_together
 
             _currentState = GameState.MainMenu;
 
-            battleHeroRect = new Rectangle(150,155,65,75);
+            battleHeroRect = new Rectangle(120,155,65,75);
 
             base.Initialize();
         }
@@ -163,100 +163,7 @@ namespace Movement_and_SpriteSheet_together
                             break;
                         }
                     }
-                    
-                    // Check for level transitions
-                    if (_levelManager.TryGetTransition(_currentState, playerRect, out var newLevel, out var spawnPoint))
-                    {
-                        _currentState = newLevel;
-                        _movement = new MovementManager(spawnPoint, _particleSystem);
-                        _encounters = _encounterManager.GetEncountersForLevel(newLevel);
-                    }
-
-                    break;
-
-                case GameState.Level2:
-                    _movement.Update(gameTime);
-                    _particleSystem.Update(gameTime);
-
-                    if (_movement.currentDirection != Vector2.Zero)
-                    {
-                        _playerSprite.Update(gameTime);
-
-                        if (_movement.currentDirection.Y > 0)
-                            _playerSprite.currentRow = 0;
-                        else if (_movement.currentDirection.X < 0)
-                            _playerSprite.currentRow = 1;
-                        else if (_movement.currentDirection.X > 0)
-                            _playerSprite.currentRow = 2;
-                        else if (_movement.currentDirection.Y < 0)
-                            _playerSprite.currentRow = 3;
-                    }
-                    else
-                        _playerSprite.Reset();
-
-                    var playerRect2 = new Rectangle((int)_movement.position.X, (int)_movement.position.Y, _playerFrameWidth, _playerFrameHeight);
-                    foreach (var enc in _encounters)
-                    {
-                        if (enc.Active && enc.Hitbox.Intersects(playerRect2))
-                        {
-                            _battleSystem.BattleStart(_hero, enc.Enemy);
-                            enc.Active = false;
-                            _currentState = GameState.Battle;
-                            _battleStarted = true;
-                            break;
-                        }
-                    }
-
-                    // check transitions using LevelManager
-                    if (_levelManager.TryGetTransition(_currentState, playerRect2, out var newState, out var spawn))
-                    {
-                        _currentState = newState;
-                        _movement = new MovementManager(spawn, _particleSystem);
-                        _encounters = _encounterManager.GetEncountersForLevel(_currentState);
-                    }
-
-                    break;
-
-                case GameState.Level3:
-                    _movement.Update(gameTime);
-                    _particleSystem.Update(gameTime);
-
-                    if (_movement.currentDirection != Vector2.Zero)
-                    {
-                        _playerSprite.Update(gameTime);
-
-                        if (_movement.currentDirection.Y > 0)
-                            _playerSprite.currentRow = 0;
-                        else if (_movement.currentDirection.X < 0)
-                            _playerSprite.currentRow = 1;
-                        else if (_movement.currentDirection.X > 0)
-                            _playerSprite.currentRow = 2;
-                        else if (_movement.currentDirection.Y < 0)
-                            _playerSprite.currentRow = 3;
-                    }
-                    else
-                        _playerSprite.Reset();
-
-                    var playerRect3 = new Rectangle((int)_movement.position.X, (int)_movement.position.Y, _playerFrameWidth, _playerFrameHeight);
-                    foreach (var enc in _encounters)
-                    {
-                        if (enc.Active && enc.Hitbox.Intersects(playerRect3))
-                        {
-                            _battleSystem.BattleStart(_hero, enc.Enemy);
-                            enc.Active = false;
-                            _currentState = GameState.Battle;
-                            _battleStarted = true;
-                            break;
-                        }
-                    }
-
-                    // check transitions using LevelManager
-                    if (_levelManager.TryGetTransition(_currentState, playerRect3, out var newStates, out var spawns))
-                    {
-                        _currentState = newStates;
-                        _movement = new MovementManager(spawns, _particleSystem);
-                        _encounters = _encounterManager.GetEncountersForLevel(_currentState);
-                    }
+                   
                     break;
 
                 case GameState.Controls:

@@ -55,7 +55,7 @@ namespace Movement_and_SpriteSheet_together
             for (int i = 0; i < _menuItems.Count; i++)
             {
                 Color color = (i == _selectedIndex) ? Color.Yellow : Color.White;
-                spriteBatch.DrawString(_font, _menuItems[i], new Vector2(50, 200 + i * 45), color);
+                spriteBatch.DrawString(_font, _menuItems[i], new Vector2(55, 215 + i * 50), color);
             }
         }
     }
