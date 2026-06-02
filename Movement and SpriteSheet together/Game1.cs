@@ -14,8 +14,6 @@ namespace Movement_and_SpriteSheet_together
         {
             MainMenu,
             Level1,
-            Level2,
-            Level3,
             Controls,
             Battle
         }
@@ -59,6 +57,11 @@ namespace Movement_and_SpriteSheet_together
 
         private EncounterManager _encounterManager;
         private LevelManager _levelManager;
+
+        private Vector2 _cameraPosition = Vector2.Zero;
+        private const int WorldWidth = 1200;
+        private const int WorldHeight = 1200;
+        private const float CameraSmoothSpeed = 3f;
 
         protected override void Initialize()
         {
@@ -109,8 +112,10 @@ namespace Movement_and_SpriteSheet_together
             _encounterManager = new EncounterManager();
             _levelManager = new LevelManager();
 
-            // Create's initial level encounters when the player starts the game (menu -> Start will switch)
             _encounters = _encounterManager.GetEncountersForLevel(GameState.Level1);
+
+            //Camera
+            _cameraPosition = GetClampedCameraTarget(_movement.position);
         }
 
         protected override void Update(GameTime gameTime)
@@ -125,7 +130,7 @@ namespace Movement_and_SpriteSheet_together
                 case GameState.MainMenu:
                     _menuManager.Update(gameTime, ref _currentState);
 
-                    if (_currentState == GameState.Level1 || _currentState == GameState.Level2)
+                    if (_currentState == GameState.Level1)
                     {
                         LoadLevel(_currentState);
                     }
@@ -163,7 +168,9 @@ namespace Movement_and_SpriteSheet_together
                             break;
                         }
                     }
-                   
+
+                    UpdateCameraSmooth(gameTime);
+
                     break;
 
                 case GameState.Controls:
@@ -242,59 +249,39 @@ namespace Movement_and_SpriteSheet_together
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
-
-            _spriteBatch.Begin();
-
             if (_currentState == GameState.MainMenu)
             {
+                _spriteBatch.Begin();
                 _menuManager.Draw(_spriteBatch);
+                _spriteBatch.End();
+
+                base.Draw(gameTime);
+                return;
             }
 
             if (_currentState == GameState.Level1)
             {
+                var transform = Matrix.CreateTranslation(new Vector3(-_cameraPosition, 0f));
+                _spriteBatch.Begin(transformMatrix: transform);
 
                 _playerSprite.Draw(_spriteBatch, _movement.position);
                 _particleSystem.Draw(_spriteBatch);
-
                 foreach (var enc in _encounters)
                 {
                     var color = enc.Active ? Color.Red * 0.6f : Color.Gray * 0.4f;
                     _spriteBatch.Draw(rectangleTexure, new Rectangle(enc.Hitbox.X, enc.Hitbox.Y, enc.Hitbox.Width, enc.Hitbox.Height), color);
                 }
 
-            }
+                _spriteBatch.End();
 
-            if (_currentState == GameState.Level2)
-            {
-
-                _playerSprite.Draw(_spriteBatch, _movement.position);
-                _particleSystem.Draw(_spriteBatch);
-
-                foreach (var enc in _encounters)
-                {
-                    var color = enc.Active ? Color.Red * 0.6f : Color.Gray * 0.4f;
-                    _spriteBatch.Draw(rectangleTexure, new Rectangle(enc.Hitbox.X, enc.Hitbox.Y, enc.Hitbox.Width, enc.Hitbox.Height), color);
-                }
-
-            }
-
-            if (_currentState == GameState.Level3)
-            {
-
-                _playerSprite.Draw(_spriteBatch, _movement.position);
-                _particleSystem.Draw(_spriteBatch);
-
-                foreach (var enc in _encounters)
-                {
-                    var color = enc.Active ? Color.Red * 0.6f : Color.Gray * 0.4f;
-                    _spriteBatch.Draw(rectangleTexure, new Rectangle(enc.Hitbox.X, enc.Hitbox.Y, enc.Hitbox.Width, enc.Hitbox.Height), color);
-                }
-
+                base.Draw(gameTime);
+                return;
             }
 
             if (_currentState == GameState.Battle)
             {
+                _spriteBatch.Begin();
+
                 var hero = _battleSystem.Hero;
                 var enemy = _battleSystem.Enemy;
 
@@ -320,9 +307,12 @@ namespace Movement_and_SpriteSheet_together
                     string xpText = $"Level: {_hero.Level}   XP: {_hero.CurrentXP}/{_hero.XPToNextLevel}";
                     _spriteBatch.DrawString(_battleFont, xpText, new Vector2(10, 10), Color.White);
                 }
+
+                _spriteBatch.End();
+
+                base.Draw(gameTime);
+                return;
             }
-        
-            _spriteBatch.End();
 
             base.Draw(gameTime);
         }
@@ -341,5 +331,44 @@ namespace Movement_and_SpriteSheet_together
             _encounterManager = new EncounterManager();
             // Movement and encounters will be reinitialized when the player selects "Start Game" from main menu.
         }
+
+        private Vector2 GetClampedCameraTarget(Vector2 worldPosition)
+        {
+            var viewport = GraphicsDevice.Viewport;
+            float vw = viewport.Width;
+            float vh = viewport.Height;
+
+            // center target on the player's middle
+            var target = worldPosition + new Vector2(_playerFrameWidth / 2f, _playerFrameHeight / 2f) - new Vector2(vw / 2f, vh / 2f);
+
+            float maxX = System.MathF.Max(0, WorldWidth - vw);
+            float maxY = System.MathF.Max(0, WorldHeight - vh);
+
+            target.X = MathHelper.Clamp(target.X, 0, maxX);
+            target.Y = MathHelper.Clamp(target.Y, 0, maxY);
+
+            return target;
+        }
+
+        private void UpdateCameraSmooth(GameTime gameTime)
+        {
+            if (_movement == null)
+                return;
+
+            Vector2 desired = GetClampedCameraTarget(_movement.position);
+
+            // Lerp based smoothing; factor is frame-time scaled.
+            float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            float t = 1f - System.MathF.Exp(-CameraSmoothSpeed * dt); // better feeling smoothing independent of frame-rate
+
+            _cameraPosition = Vector2.Lerp(_cameraPosition, desired, t);
+
+            // final clamp for safety
+            float maxX = System.MathF.Max(0, WorldWidth - GraphicsDevice.Viewport.Width);
+            float maxY = System.MathF.Max(0, WorldHeight - GraphicsDevice.Viewport.Height);
+            _cameraPosition.X = MathHelper.Clamp(_cameraPosition.X, 0, maxX);
+            _cameraPosition.Y = MathHelper.Clamp(_cameraPosition.Y, 0, maxY);
+        }
+
     }
 }
