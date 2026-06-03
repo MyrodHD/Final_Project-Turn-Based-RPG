@@ -84,10 +84,10 @@ namespace Movement_and_SpriteSheet_together
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
-            playerTexture = Content.Load<Texture2D>("player_hat_spritesheet");
+            playerTexture = Content.Load<Texture2D>("blonde_man");
             rectangleTexure = Content.Load<Texture2D>("rectangle");
             particleTexure = Content.Load<Texture2D>("circle");
-            battleHeroTexture = Content.Load<Texture2D>("rectangle");
+            battleHeroTexture = Content.Load<Texture2D>("blonde");
             backgroundTexture = Content.Load<Texture2D>("Overworld");
 
             _font = Content.Load<SpriteFont>("TitleFont");
@@ -298,9 +298,10 @@ namespace Movement_and_SpriteSheet_together
                 var hero = _battleSystem.Hero;
                 var enemy = _battleSystem.Enemy;
 
-                _spriteBatch.Draw(battleHeroTexture, battleHeroRect, Color.Blue);
+                _spriteBatch.Draw(battleHeroTexture, battleHeroRect, Color.White);
                 _spriteBatch.DrawString(_battleFont, $"HP: {hero.HP}", new Vector2(158, 240), Color.White);
-                _spriteBatch.DrawString(_battleFont, $"Enemy: {enemy.Name}  HP: {enemy.HP}", new Vector2(450, 190), Color.White);
+
+                _spriteBatch.DrawString(_battleFont, $"HP: {enemy.HP}", new Vector2(450, 190), Color.White);
                 
                 if (_battleSystem.State == BattleState.PlayerTurn || _battleSystem.State == BattleState.EnemyTurn)
                     _spriteBatch.DrawString(_battleFont, $"Turn: {_battleSystem.State}", new Vector2(50, 50), Color.Yellow);
