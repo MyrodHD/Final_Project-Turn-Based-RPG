@@ -15,17 +15,17 @@ namespace Movement_and_SpriteSheet_together
             switch (level)
             {
                 case Game1.GameState.Level1:
-                    list.Add(new Encounter(new Rectangle(300, 90, 48, 48), new Enemy("Goblin", 12, 3, 2)));
-                    list.Add(new Encounter(new Rectangle(120, 360, 48, 48), new Enemy("Wolf", 15, 4, 4)));
-                    list.Add(new Encounter(new Rectangle(510, 335, 48, 48), new Enemy("Bandit", 18, 4, 6)));
+                    list.Add(new Encounter(new Rectangle(185, 65, 36, 36), new Enemy("Goblin", 12, 3, 2)));
+                    list.Add(new Encounter(new Rectangle(95, 630, 36, 36), new Enemy("Wolf", 15, 4, 4)));
+                    list.Add(new Encounter(new Rectangle(385, 65, 36, 36), new Enemy("Bandit", 18, 4, 6)));
 
-                    list.Add(new Encounter(new Rectangle(175, 245, 48, 48), new Enemy("Slime", 19, 3, 1)));
-                    list.Add(new Encounter(new Rectangle(700, 80, 48, 48), new Enemy("Orc", 22, 5, 10)));
-                    list.Add(new Encounter(new Rectangle(430, 340, 48, 48), new Enemy("Wraith", 20, 5, 3)));
+                    list.Add(new Encounter(new Rectangle(590, 95, 36, 36), new Enemy("Slime", 19, 3, 1)));
+                    list.Add(new Encounter(new Rectangle(1055, 345, 35, 36), new Enemy("Orc", 22, 5, 10)));
+                    list.Add(new Encounter(new Rectangle(965, 1045, 36, 36), new Enemy("Wraith", 20, 5, 3)));
 
-                    list.Add(new Encounter(new Rectangle(550, 500, 48, 48), new Enemy("Skeleton", 18, 5, 8)));
-                    list.Add(new Encounter(new Rectangle(375, 220, 48, 48), new Enemy("Troll", 30, 6, 15)));
-                    list.Add(new Encounter(new Rectangle(400, 480, 48, 48), new Enemy("Vampire", 25, 6, 14)));
+                    list.Add(new Encounter(new Rectangle(1030, 105, 36, 36), new Enemy("Skeleton", 18, 5, 8)));
+                    list.Add(new Encounter(new Rectangle(105, 375, 36, 36), new Enemy("Troll", 30, 6, 15)));
+                    list.Add(new Encounter(new Rectangle(600, 950, 36, 36), new Enemy("Vampire", 25, 6, 14)));
 
                     break;
             }

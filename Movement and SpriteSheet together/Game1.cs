@@ -38,6 +38,9 @@ namespace Movement_and_SpriteSheet_together
         Texture2D particleTexure;
         Texture2D heroTexture;
         Texture2D enemyTexture;
+        Texture2D backgroundTexture;
+
+        Rectangle backgroundRect;
 
         Texture2D battleHeroTexture;
         Rectangle battleHeroRect;
@@ -71,6 +74,8 @@ namespace Movement_and_SpriteSheet_together
 
             battleHeroRect = new Rectangle(120,155,65,75);
 
+            backgroundRect = new Rectangle(0, 0, WorldWidth, WorldHeight);
+
             base.Initialize();
         }
 
@@ -83,6 +88,7 @@ namespace Movement_and_SpriteSheet_together
             rectangleTexure = Content.Load<Texture2D>("rectangle");
             particleTexure = Content.Load<Texture2D>("circle");
             battleHeroTexture = Content.Load<Texture2D>("rectangle");
+            backgroundTexture = Content.Load<Texture2D>("Overworld");
 
             _font = Content.Load<SpriteFont>("TitleFont");
             _battleFont = Content.Load<SpriteFont>("BattleFont");
@@ -264,6 +270,8 @@ namespace Movement_and_SpriteSheet_together
                 var transform = Matrix.CreateTranslation(new Vector3(-_cameraPosition, 0f));
                 _spriteBatch.Begin(transformMatrix: transform);
 
+                _spriteBatch.Draw(backgroundTexture, backgroundRect, Color.White);
+
                 _playerSprite.Draw(_spriteBatch, _movement.position);
                 _particleSystem.Draw(_spriteBatch);
                 foreach (var enc in _encounters)
@@ -276,6 +284,11 @@ namespace Movement_and_SpriteSheet_together
 
                 base.Draw(gameTime);
                 return;
+            }
+
+            if (_currentState == GameState.Controls)
+            {
+
             }
 
             if (_currentState == GameState.Battle)
