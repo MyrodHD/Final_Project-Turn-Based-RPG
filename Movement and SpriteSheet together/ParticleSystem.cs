@@ -30,7 +30,7 @@ namespace Movement_and_SpriteSheet_together
                     _lifespan = 0.5f,
                     _currentLife = 0,
                     _scale = (float)_rng.NextDouble() * 0.7f + 0.1f,
-                    _color = Color.ForestGreen * 0.4f
+                    _color = Color.LightGray * 0.15f
                 });
             }
         }

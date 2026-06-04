@@ -109,7 +109,7 @@ namespace Movement_and_SpriteSheet_together
 
         public int GetRandomHeal(int baseHeal)
         {
-            int heal = _rng.Next(3, _hero.MaxHP / 2);
+            int heal = _rng.Next(5, _hero.MaxHP / 2);
             return heal;
         }
     }

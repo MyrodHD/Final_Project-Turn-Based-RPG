@@ -24,7 +24,7 @@ namespace Movement_and_SpriteSheet_together
                     list.Add(new Encounter(new Rectangle(965, 1045, 36, 36), new Enemy("Wraith", 20, 5, 3)));
 
                     list.Add(new Encounter(new Rectangle(1030, 105, 36, 36), new Enemy("Skeleton", 18, 5, 8)));
-                    list.Add(new Encounter(new Rectangle(105, 375, 36, 36), new Enemy("Troll", 30, 6, 15)));
+                    list.Add(new Encounter(new Rectangle(105, 382, 36, 36), new Enemy("Troll", 30, 6, 15)));
                     list.Add(new Encounter(new Rectangle(600, 950, 36, 36), new Enemy("Vampire", 25, 6, 14)));
 
                     break;

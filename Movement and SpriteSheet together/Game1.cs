@@ -87,7 +87,7 @@ namespace Movement_and_SpriteSheet_together
             playerTexture = Content.Load<Texture2D>("blonde_man");
             rectangleTexure = Content.Load<Texture2D>("rectangle");
             particleTexure = Content.Load<Texture2D>("circle");
-            battleHeroTexture = Content.Load<Texture2D>("blonde");
+            battleHeroTexture = Content.Load<Texture2D>("rectangle");
             backgroundTexture = Content.Load<Texture2D>("Overworld");
 
             _font = Content.Load<SpriteFont>("TitleFont");
@@ -288,6 +288,22 @@ namespace Movement_and_SpriteSheet_together
 
             if (_currentState == GameState.Controls)
             {
+                _spriteBatch.Begin();
+
+                _spriteBatch.DrawString(_menuFont, "Controls: ", new Vector2(25,50), Color.White);
+                _spriteBatch.DrawString(_menuFont, "Move: WASD", new Vector2(25, 75), Color.White);
+                _spriteBatch.DrawString(_menuFont, "Combat: Up and Down arrows to navigate, Enter to confirm", new Vector2(25,100), Color.White);
+                _spriteBatch.DrawString(_menuFont, "Left click to interact with menu while in battle", new Vector2(105,125), Color.White);
+                _spriteBatch.DrawString(_menuFont, "Press R if you won or lost the battle", new Vector2(105,150), Color.White);
+
+                _spriteBatch.DrawString(_menuFont, "How to Play: ", new Vector2(25, 200), Color.White);
+                _spriteBatch.DrawString(_menuFont, "Walk around and run into enemies to start battles", new Vector2(25,225), Color.White);
+                _spriteBatch.DrawString(_menuFont, "Defeat enemies to gain xp and level up and get stronger", new Vector2(25,250), Color.White);
+
+                _spriteBatch.End();
+                
+                base.Draw(gameTime);
+                return;
 
             }
 
@@ -299,9 +315,10 @@ namespace Movement_and_SpriteSheet_together
                 var enemy = _battleSystem.Enemy;
 
                 _spriteBatch.Draw(battleHeroTexture, battleHeroRect, Color.White);
+
                 _spriteBatch.DrawString(_battleFont, $"HP: {hero.HP}", new Vector2(158, 240), Color.White);
 
-                _spriteBatch.DrawString(_battleFont, $"HP: {enemy.HP}", new Vector2(450, 190), Color.White);
+                _spriteBatch.DrawString(_battleFont, $"Name: {enemy.Name} HP: {enemy.HP}", new Vector2(450, 190), Color.White);
                 
                 if (_battleSystem.State == BattleState.PlayerTurn || _battleSystem.State == BattleState.EnemyTurn)
                     _spriteBatch.DrawString(_battleFont, $"Turn: {_battleSystem.State}", new Vector2(50, 50), Color.Yellow);

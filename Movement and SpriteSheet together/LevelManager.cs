@@ -9,7 +9,7 @@ namespace Movement_and_SpriteSheet_together
     public class LevelManager
     {
         
-        private readonly Vector2 _level1Spawn = new Vector2(100, 100);
+        private readonly Vector2 _level1Spawn = new Vector2(175, 1135);
 
         public Rectangle GetLevelBounds(Game1.GameState level)
         {

@@ -49,7 +49,7 @@ namespace Movement_and_SpriteSheet_together
                 _dustTimer -= dt;
                 if (_dustTimer <= 0)
                 {
-                    Vector2 feetOffset = new Vector2(16, 34);
+                    Vector2 feetOffset = new Vector2(11, 29);
                     _particleSystem.CreateDustBurst(position + feetOffset);
 
                     _dustTimer = dustInterval;
