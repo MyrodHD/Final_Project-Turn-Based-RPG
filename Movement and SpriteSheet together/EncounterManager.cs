@@ -8,7 +8,7 @@ namespace Movement_and_SpriteSheet_together
 {
     public class EncounterManager
     {
-        public List<Encounter> GetEncountersForLevel(Game1.GameState level)
+        public List<Encounter> GetEncountersForLevel(Game1.GameState level, int playerLevel = 1)
         {
             var list = new List<Encounter>();
 
@@ -29,6 +29,25 @@ namespace Movement_and_SpriteSheet_together
 
                     break;
             }
+
+            if (playerLevel > 1 && list.Count > 0)
+            {
+                float multiplier = 1f + (playerLevel - 1) * 0.20f; // 20% stronger per level above 1
+
+                for (int i = 0; i < list.Count; i++)
+                {
+                    var enc = list[i];
+                    var baseEnemy = enc.Enemy;
+
+                    int scaledHP = System.Math.Max(1, (int)System.MathF.Ceiling(baseEnemy.HP * multiplier));
+                    int scaledAttack = System.Math.Max(1, (int)System.MathF.Ceiling(baseEnemy.AttackPower * multiplier));
+                    int scaledXP = System.Math.Max(1, (int)System.MathF.Ceiling(baseEnemy.XPValue * multiplier));
+
+                    // Create a new Enemy instance with scaled stats (Encounter.Active defaults remain true).
+                    list[i] = new Encounter(enc.Hitbox, new Enemy(baseEnemy.Name, scaledHP, scaledAttack, scaledXP));
+                }
+            }
+
 
             return list;
         }

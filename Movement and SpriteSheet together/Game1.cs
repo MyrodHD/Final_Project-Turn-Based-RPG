@@ -1,7 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Movement_and_SpriteSheet_together
 {
@@ -65,6 +67,11 @@ namespace Movement_and_SpriteSheet_together
         private const int WorldWidth = 1200;
         private const int WorldHeight = 1200;
         private const float CameraSmoothSpeed = 3f;
+
+        private Encounter _currentEncounter = null;
+
+        // Respawn delay used when reloading or when an encounter is defeated (seconds).
+        private const float EncounterRespawnDelay = 2.5f;
 
         protected override void Initialize()
         {
@@ -168,7 +175,12 @@ namespace Movement_and_SpriteSheet_together
                         if (enc.Active && enc.Hitbox.Intersects(playerRect))
                         {
                             _battleSystem.BattleStart(_hero, enc.Enemy);
-                            enc.Active = false;
+                            //enc.Active = false;
+                            //_currentState = GameState.Battle;
+                            //_battleStarted = true;
+                            _currentEncounter = enc;
+
+                            // Set game state and mark that a battle started
                             _currentState = GameState.Battle;
                             _battleStarted = true;
                             break;
@@ -176,6 +188,39 @@ namespace Movement_and_SpriteSheet_together
                     }
 
                     UpdateCameraSmooth(gameTime);
+
+                    float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+                    foreach (var enc in _encounters)
+                    {
+                        bool timerFinished = enc.UpdateRespawn(dt);
+
+                        // If timer finished (or it was already zero) and the encounter is currently inactive,
+                        // only reactivate when the player is not standing on the encounter hitbox.
+                        if (timerFinished || (!enc.IsAwaitingRespawn && !enc.Active))
+                        {
+                            if (!playerRect.Intersects(enc.Hitbox))
+                            {
+                                enc.Active = true;
+                            }
+                            else
+                            {
+                                // Player still on the spot — keep it inactive and add a small additional delay
+                                // so they don't instantly trigger when they step off.
+                                enc.StartRespawn(0.75f);
+                            }
+                        }
+                    }
+
+                    if (_encounters == null || _encounters.Count == 0 || _encounters.All(e => !e.Active && !e.IsAwaitingRespawn))
+                    {
+                        // Reload scaled encounters
+                        // Start them in an inactive/awaiting-respawn state so they don't immediately fight.
+                        var newEncounters = _encounterManager.GetEncountersForLevel(GameState.Level1, _hero?.Level ?? 1);
+                        foreach (var e in newEncounters)
+                            e.StartRespawn(EncounterRespawnDelay);
+
+                        _encounters = newEncounters;
+                    }
 
                     break;
 
@@ -360,7 +405,28 @@ namespace Movement_and_SpriteSheet_together
             _hero = new Hero("Hero", 30, 4, battleHeroTexture, battleHeroRect);
             _battleSystem = new BattleSystem();
             _encounterManager = new EncounterManager();
-            // Movement and encounters will be reinitialized when the player selects "Start Game" from main menu.
+        }
+
+        private void ScaleEncountersToPlayerLevel(List<Encounter> encounters, int playerLevel)
+        {
+            if (encounters == null || encounters.Count == 0)
+                return;
+
+            // Example: 20% stronger per level above 1
+            float multiplier = 1f + (playerLevel - 1) * 0.2f;
+
+            for (int i = 0; i < encounters.Count; i++)
+            {
+                var enc = encounters[i];
+                var baseEnemy = enc.Enemy;
+
+                // read base stats and scale them
+                int scaledHP = Math.Max(1, (int)System.MathF.Ceiling(baseEnemy.HP * multiplier));
+                int scaledAttack = Math.Max(1, (int)System.MathF.Ceiling(baseEnemy.AttackPower * multiplier));
+                int scaledXP = Math.Max(1, (int)System.MathF.Ceiling(baseEnemy.XPValue * multiplier));
+
+                enc.Enemy = new Enemy(baseEnemy.Name, scaledHP, scaledAttack, scaledXP);
+            }
         }
 
         private Vector2 GetClampedCameraTarget(Vector2 worldPosition)
