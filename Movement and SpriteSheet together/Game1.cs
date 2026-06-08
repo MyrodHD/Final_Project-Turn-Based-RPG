@@ -71,7 +71,7 @@ namespace Movement_and_SpriteSheet_together
         private Encounter _currentEncounter = null;
 
         // Respawn delay used when reloading or when an encounter is defeated (seconds).
-        private const float EncounterRespawnDelay = 2.5f;
+        private const float EncounterRespawnDelay = 5f;
 
         protected override void Initialize()
         {
@@ -175,9 +175,6 @@ namespace Movement_and_SpriteSheet_together
                         if (enc.Active && enc.Hitbox.Intersects(playerRect))
                         {
                             _battleSystem.BattleStart(_hero, enc.Enemy);
-                            //enc.Active = false;
-                            //_currentState = GameState.Battle;
-                            //_battleStarted = true;
                             _currentEncounter = enc;
 
                             // Set game state and mark that a battle started
@@ -198,11 +195,11 @@ namespace Movement_and_SpriteSheet_together
                         // only reactivate when the player is not standing on the encounter hitbox.
                         if (timerFinished || (!enc.IsAwaitingRespawn && !enc.Active))
                         {
-                            if (!playerRect.Intersects(enc.Hitbox))
+                            if (playerRect.Intersects(enc.Hitbox))
                             {
                                 enc.Active = true;
                             }
-                            else
+                            else if (!playerRect.Intersects(enc.Hitbox))
                             {
                                 // Player still on the spot — keep it inactive and add a small additional delay
                                 // so they don't instantly trigger when they step off.
@@ -339,7 +336,7 @@ namespace Movement_and_SpriteSheet_together
                 _spriteBatch.DrawString(_menuFont, "Move: WASD", new Vector2(25, 75), Color.White);
                 _spriteBatch.DrawString(_menuFont, "Combat: Up and Down arrows to navigate, Enter to confirm", new Vector2(25,100), Color.White);
                 _spriteBatch.DrawString(_menuFont, "Left click to interact with menu while in battle", new Vector2(105,125), Color.White);
-                _spriteBatch.DrawString(_menuFont, "Press R if you won or lost the battle", new Vector2(105,150), Color.White);
+                _spriteBatch.DrawString(_menuFont, "Press R if you won or lost the battle and to exit this menu", new Vector2(105,150), Color.White);
 
                 _spriteBatch.DrawString(_menuFont, "How to Play: ", new Vector2(25, 200), Color.White);
                 _spriteBatch.DrawString(_menuFont, "Walk around and run into enemies to start battles", new Vector2(25,225), Color.White);
