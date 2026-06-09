@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,16 +44,28 @@ namespace Movement_and_SpriteSheet_together
         Texture2D enemyTexture;
         Texture2D backgroundTexture;
 
-        Rectangle backgroundRect;
-
         Texture2D battleHeroTexture;
+        Texture2D placeholderTexture2;
+        Texture2D placeholderTexture3;
+        Texture2D placeholderTexture4;
+        Texture2D placeholderTexture5;
+        Texture2D placeholderTexture6;
+        Texture2D placeholderTexture7;
+        Texture2D placeholderTexture8;
+        Texture2D placeholderTexture9;
+
         Rectangle battleHeroRect;
+        Rectangle backgroundRect;
 
         SpriteFont _font;
         SpriteFont _battleFont;
         SpriteFont _menuFont;
 
         Hero _hero;
+
+        Song menuSound;
+        Song gameSound;
+        Song attackSound;
 
         BattleSystem _battleSystem;
         private bool _battleStarted = false;
@@ -73,13 +87,14 @@ namespace Movement_and_SpriteSheet_together
         // Respawn delay used when reloading or when an encounter is defeated (seconds).
         private const float EncounterRespawnDelay = 5f;
 
+
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
 
             _currentState = GameState.MainMenu;
 
-            battleHeroRect = new Rectangle(120,155,65,75);
+            battleHeroRect = new Rectangle(150,155,65,75);
 
             backgroundRect = new Rectangle(0, 0, WorldWidth, WorldHeight);
 
@@ -94,12 +109,25 @@ namespace Movement_and_SpriteSheet_together
             playerTexture = Content.Load<Texture2D>("blonde_man");
             rectangleTexure = Content.Load<Texture2D>("rectangle");
             particleTexure = Content.Load<Texture2D>("circle");
-            battleHeroTexture = Content.Load<Texture2D>("rectangle");
             backgroundTexture = Content.Load<Texture2D>("Overworld");
+
+            battleHeroTexture = Content.Load<Texture2D>("Enemies/blonde");
+            placeholderTexture2 = Content.Load<Texture2D>("Enemies/fire_skull-final");
+            placeholderTexture3 = Content.Load<Texture2D>("Enemies/goblin-final");
+            placeholderTexture4 = Content.Load<Texture2D>("Enemies/knight-final");
+            placeholderTexture5 = Content.Load<Texture2D>("Enemies/orc-final");
+            placeholderTexture6 = Content.Load<Texture2D>("Enemies/skelly-final");
+            placeholderTexture7 = Content.Load<Texture2D>("Enemies/slime-final");
+            placeholderTexture8 = Content.Load<Texture2D>("Enemies/witch-final");
+            placeholderTexture9 = Content.Load<Texture2D>("Enemies/wraith-final");
 
             _font = Content.Load<SpriteFont>("TitleFont");
             _battleFont = Content.Load<SpriteFont>("BattleFont");
             _menuFont = Content.Load<SpriteFont>("BattleMenu");
+
+            menuSound = Content.Load<Song>("Music/Menu_music");
+            gameSound = Content.Load<Song>("Music/Game_music");
+            attackSound = Content.Load<Song>("Music/Battle_music");
 
             List<string> menuItems = new List<string> { "Start Game", "Controls" };
             
@@ -318,7 +346,7 @@ namespace Movement_and_SpriteSheet_together
                 _particleSystem.Draw(_spriteBatch);
                 foreach (var enc in _encounters)
                 {
-                    var color = enc.Active ? Color.Red * 0.6f : Color.Gray * 0.4f;
+                    var color = enc.Active ? Color.Red * 0.5f : Color.Gray * 0.4f;
                     _spriteBatch.Draw(rectangleTexure, new Rectangle(enc.Hitbox.X, enc.Hitbox.Y, enc.Hitbox.Width, enc.Hitbox.Height), color);
                 }
 
