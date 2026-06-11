@@ -45,14 +45,14 @@ namespace Movement_and_SpriteSheet_together
         Texture2D backgroundTexture;
 
         Texture2D battleHeroTexture;
-        Texture2D placeholderTexture2;
-        Texture2D placeholderTexture3;
-        Texture2D placeholderTexture4;
-        Texture2D placeholderTexture5;
-        Texture2D placeholderTexture6;
-        Texture2D placeholderTexture7;
-        Texture2D placeholderTexture8;
-        Texture2D placeholderTexture9;
+        Texture2D fireSkullTexture;
+        Texture2D goblinTexture;
+        Texture2D knightTexture;
+        Texture2D orcTexture;
+        Texture2D skellyTexture;
+        Texture2D slimeTexture;
+        Texture2D witchTexture;
+        Texture2D wraithTexture;
 
         Rectangle battleHeroRect;
         Rectangle backgroundRect;
@@ -115,14 +115,14 @@ namespace Movement_and_SpriteSheet_together
             backgroundTexture = Content.Load<Texture2D>("Overworld");
 
             battleHeroTexture = Content.Load<Texture2D>("Enemies/blonde");
-            placeholderTexture2 = Content.Load<Texture2D>("Enemies/fire_skull-final");
-            placeholderTexture3 = Content.Load<Texture2D>("Enemies/goblin-final");
-            placeholderTexture4 = Content.Load<Texture2D>("Enemies/knight-final");
-            placeholderTexture5 = Content.Load<Texture2D>("Enemies/orc-final");
-            placeholderTexture6 = Content.Load<Texture2D>("Enemies/skelly-final");
-            placeholderTexture7 = Content.Load<Texture2D>("Enemies/slime-final");
-            placeholderTexture8 = Content.Load<Texture2D>("Enemies/witch-final");
-            placeholderTexture9 = Content.Load<Texture2D>("Enemies/wraith-final");
+            fireSkullTexture = Content.Load<Texture2D>("Enemies/fire_skull-final");
+            goblinTexture = Content.Load<Texture2D>("Enemies/goblin-final");
+            knightTexture = Content.Load<Texture2D>("Enemies/knight-final");
+            orcTexture = Content.Load<Texture2D>("Enemies/orc-final");
+            skellyTexture = Content.Load<Texture2D>("Enemies/skelly-final");
+            slimeTexture = Content.Load<Texture2D>("Enemies/slime-final");
+            witchTexture = Content.Load<Texture2D>("Enemies/witch-final");
+            wraithTexture = Content.Load<Texture2D>("Enemies/wraith-final");
 
             _font = Content.Load<SpriteFont>("TitleFont");
             _battleFont = Content.Load<SpriteFont>("BattleFont");
