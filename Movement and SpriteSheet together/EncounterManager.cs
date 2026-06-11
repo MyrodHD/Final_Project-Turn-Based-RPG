@@ -16,16 +16,16 @@ namespace Movement_and_SpriteSheet_together
             {
                 case Game1.GameState.Level1:
                     list.Add(new Encounter(new Rectangle(185, 65, 36, 36), new Enemy("Goblin", 12, 3, 2)));
-                    list.Add(new Encounter(new Rectangle(95, 630, 36, 36), new Enemy("Fire Skull", 15, 4, 4)));
-                    list.Add(new Encounter(new Rectangle(385, 65, 36, 36), new Enemy("Knight", 18, 4, 6)));
+                    list.Add(new Encounter(new Rectangle(95, 630, 36, 36), new Enemy("Fire Skull", 16, 4, 4)));
+                    list.Add(new Encounter(new Rectangle(385, 65, 36, 36), new Enemy("Knight", 17, 4, 4)));
 
                     list.Add(new Encounter(new Rectangle(590, 95, 36, 36), new Enemy("Slime", 19, 3, 1)));
-                    list.Add(new Encounter(new Rectangle(1055, 345, 35, 36), new Enemy("Orc", 22, 5, 10)));
-                    list.Add(new Encounter(new Rectangle(965, 1045, 36, 36), new Enemy("Wraith", 20, 5, 3)));
+                    list.Add(new Encounter(new Rectangle(1055, 345, 35, 36), new Enemy("Orc", 22, 5, 6)));
+                    list.Add(new Encounter(new Rectangle(965, 1045, 36, 36), new Enemy("Wraith", 20, 5, 4)));
 
-                    list.Add(new Encounter(new Rectangle(1030, 105, 36, 36), new Enemy("Skeleton", 18, 5, 8)));
-                    list.Add(new Encounter(new Rectangle(105, 382, 36, 36), new Enemy("Witch", 30, 6, 15)));
-                    list.Add(new Encounter(new Rectangle(600, 950, 36, 36), new Enemy("Rectangle", 25, 6, 14)));
+                    list.Add(new Encounter(new Rectangle(1030, 105, 36, 36), new Enemy("Skeleton", 18, 5, 7)));
+                    list.Add(new Encounter(new Rectangle(105, 382, 36, 36), new Enemy("Witch", 30, 6, 7)));
+                    list.Add(new Encounter(new Rectangle(600, 950, 36, 36), new Enemy("Rectangle", 25, 6, 3)));
 
                     break;
             }

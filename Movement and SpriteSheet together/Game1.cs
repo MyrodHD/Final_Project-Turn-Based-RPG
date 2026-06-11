@@ -101,6 +101,8 @@ namespace Movement_and_SpriteSheet_together
 
             backgroundRect = new Rectangle(0, 0, WorldWidth, WorldHeight);
 
+            Window.Title = "Turn-Based RPG Game";
+
             base.Initialize();
         }
 
