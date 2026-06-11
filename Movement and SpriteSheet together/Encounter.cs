@@ -1,9 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Movement_and_SpriteSheet_together
 {
@@ -15,10 +11,15 @@ namespace Movement_and_SpriteSheet_together
 
         private float _respawnTimer = 0f;
 
+        // store the base stats so we can restore the enemy when it respawns
+        private readonly Enemy _baseEnemy;
+
         public Encounter(Rectangle hitbox, Enemy enemy)
         {
             Hitbox = hitbox;
             Enemy = enemy;
+            // clone the provided enemy as the template (so we can restore HP / stats later)
+            _baseEnemy = new Enemy(enemy.Name, enemy.HP, enemy.AttackPower, enemy.XPValue);
         }
         public void StartRespawn(float seconds)
         {
@@ -46,5 +47,11 @@ namespace Movement_and_SpriteSheet_together
 
         // Expose whether an encounter is currently waiting to respawn.
         public bool IsAwaitingRespawn => _respawnTimer > 0f;
+
+        // Reset the encounter's Enemy to the original base stats (full HP).
+        public void ResetEnemy()
+        {
+            Enemy = new Enemy(_baseEnemy.Name, _baseEnemy.HP, _baseEnemy.AttackPower, _baseEnemy.XPValue);
+        }
     }
 }

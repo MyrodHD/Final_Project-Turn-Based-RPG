@@ -87,6 +87,9 @@ namespace Movement_and_SpriteSheet_together
         // Respawn delay used when reloading or when an encounter is defeated (seconds).
         private const float EncounterRespawnDelay = 5f;
 
+        // Count how many global respawn cycles have happened; used to increase difficulty on full-respawn.
+        private int _respawnCycle = 0;
+
 
         protected override void Initialize()
         {
@@ -225,13 +228,15 @@ namespace Movement_and_SpriteSheet_together
                         {
                             if (playerRect.Intersects(enc.Hitbox))
                             {
-                                enc.Active = true;
-                            }
-                            else if (!playerRect.Intersects(enc.Hitbox))
-                            {
                                 // Player still on the spot — keep it inactive and add a small additional delay
                                 // so they don't instantly trigger when they step off.
                                 enc.StartRespawn(0.75f);
+                            }
+                            else
+                            {
+                                // Reactivate the encounter and restore the enemy's HP/stats
+                                enc.ResetEnemy();
+                                enc.Active = true;
                             }
                         }
                     }
@@ -240,7 +245,10 @@ namespace Movement_and_SpriteSheet_together
                     {
                         // Reload scaled encounters
                         // Start them in an inactive/awaiting-respawn state so they don't immediately fight.
-                        var newEncounters = _encounterManager.GetEncountersForLevel(GameState.Level1, _hero?.Level ?? 1);
+                        // increment respawn cycle to slightly increase difficulty each global respawn
+                        _respawnCycle++;
+                        var levelFactor = (_hero?.Level ?? 1) + _respawnCycle;
+                        var newEncounters = _encounterManager.GetEncountersForLevel(GameState.Level1, levelFactor);
                         foreach (var e in newEncounters)
                             e.StartRespawn(EncounterRespawnDelay);
 
@@ -290,6 +298,11 @@ namespace Movement_and_SpriteSheet_together
                         int xp = _battleSystem.Enemy?.XPValue ?? 0;
                         if (xp > 0)
                             _hero.AddXP(xp);
+
+                        // Start respawn for the encounter that was just defeated (so it won't immediately retrigger)
+                        _currentEncounter?.StartRespawn(EncounterRespawnDelay);
+                        // Clear the current encounter reference so the defeated instance won't be reused immediately
+                        _currentEncounter = null;
 
                         // prevent awarding more than once
                         _battleStarted = false;
