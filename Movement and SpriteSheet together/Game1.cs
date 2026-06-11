@@ -80,7 +80,7 @@ namespace Movement_and_SpriteSheet_together
         private Vector2 _cameraPosition = Vector2.Zero;
         private const int WorldWidth = 1200;
         private const int WorldHeight = 1200;
-        private const float CameraSmoothSpeed = 3f;
+        private const float CameraSmoothSpeed = 2f;
 
         private Encounter _currentEncounter = null;
 
@@ -384,6 +384,8 @@ namespace Movement_and_SpriteSheet_together
                 _spriteBatch.DrawString(_menuFont, "How to Play: ", new Vector2(25, 200), Color.White);
                 _spriteBatch.DrawString(_menuFont, "Walk around and run into enemies to start battles", new Vector2(25,225), Color.White);
                 _spriteBatch.DrawString(_menuFont, "Defeat enemies to gain xp and level up and get stronger", new Vector2(25,250), Color.White);
+                _spriteBatch.DrawString(_menuFont, "Try to survive as long as you can", new Vector2(25,275), Color.White);
+                _spriteBatch.DrawString(_menuFont, "Defeat as many enemies as you can", new Vector2(25,300), Color.White);
 
                 _spriteBatch.End();
                 
