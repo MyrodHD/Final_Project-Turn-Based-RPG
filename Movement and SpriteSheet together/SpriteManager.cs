@@ -51,6 +51,5 @@ namespace Movement_and_SpriteSheet_together
         {
             _currentFrame = 0;
         }
-
     }
 }

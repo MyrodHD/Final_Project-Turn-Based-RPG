@@ -90,7 +90,6 @@ namespace Movement_and_SpriteSheet_together
         // Count how many global respawn cycles have happened; used to increase difficulty on full-respawn.
         private int _respawnCycle = 0;
 
-
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
@@ -115,7 +114,6 @@ namespace Movement_and_SpriteSheet_together
             rectangleTexure = Content.Load<Texture2D>("rectangle");
             particleTexure = Content.Load<Texture2D>("circle");
             backgroundTexture = Content.Load<Texture2D>("Overworld");
-
             battleHeroTexture = Content.Load<Texture2D>("Enemies/blonde");
             fireSkullTexture = Content.Load<Texture2D>("Enemies/fire_skull-final");
             goblinTexture = Content.Load<Texture2D>("Enemies/goblin-final");
@@ -256,7 +254,6 @@ namespace Movement_and_SpriteSheet_together
 
                         _encounters = newEncounters;
                     }
-
                     break;
 
                 case GameState.Controls:
@@ -393,7 +390,7 @@ namespace Movement_and_SpriteSheet_together
                 return;
 
             }
-
+             
             if (_currentState == GameState.Battle)
             {
                 _spriteBatch.Begin();
@@ -411,7 +408,6 @@ namespace Movement_and_SpriteSheet_together
                     _spriteBatch.DrawString(_battleFont, $"Turn: {_battleSystem.State}", new Vector2(50, 50), Color.Yellow);
                 
                 _spriteBatch.DrawString(_battleFont, $"Action: {_battleSystem.LastAction}", new Vector2(50, 70), Color.White);
-
 
                 if (_battleSystem.State == BattleState.PlayerTurn)
                     _battleMenu.Draw(_spriteBatch, Color.White, Color.Yellow);
@@ -508,6 +504,5 @@ namespace Movement_and_SpriteSheet_together
             _cameraPosition.X = MathHelper.Clamp(_cameraPosition.X, 0, maxX);
             _cameraPosition.Y = MathHelper.Clamp(_cameraPosition.Y, 0, maxY);
         }
-
     }
 }

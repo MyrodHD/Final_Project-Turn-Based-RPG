@@ -64,6 +64,5 @@ namespace Movement_and_SpriteSheet_together
             // _speed * dt ensures consistent movement regardless of frame rate
             position += direction * _speed * dt;
         }
-    
     }
 }

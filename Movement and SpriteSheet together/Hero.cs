@@ -24,7 +24,6 @@ namespace Movement_and_SpriteSheet_together
         public int HP => _HP;
         public int MaxHP => _maxHP;
         public int AttackPower => _attackPower;
-
         public int Level => _xpSystem.Level;
         public int CurrentXP => _xpSystem.CurrentXP;
         public int XPToNextLevel => _xpSystem.XPToNextLevel;

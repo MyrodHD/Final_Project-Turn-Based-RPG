@@ -12,7 +12,6 @@ namespace Movement_and_SpriteSheet_together
         private int _HP;
         private int _attackPower;
         private int _xpValue;
-
         public string Name => _name;
         public int HP => _HP;
         public int AttackPower => _attackPower;
