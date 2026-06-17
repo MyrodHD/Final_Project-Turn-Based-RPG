@@ -54,6 +54,9 @@ namespace Movement_and_SpriteSheet_together
         Texture2D witchTexture;
         Texture2D wraithTexture;
 
+        // map enemy name -> texture (case-insensitive)
+        private Dictionary<string, Texture2D> _enemyTextures;
+
         Rectangle battleHeroRect;
         Rectangle backgroundRect;
 
@@ -123,6 +126,21 @@ namespace Movement_and_SpriteSheet_together
             slimeTexture = Content.Load<Texture2D>("Enemies/slime-final");
             witchTexture = Content.Load<Texture2D>("Enemies/witch-final");
             wraithTexture = Content.Load<Texture2D>("Enemies/wraith-final");
+
+            // Build a lookup so we can draw the correct texture for the current enemy.
+            _enemyTextures = new Dictionary<string, Texture2D>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["Goblin"] = goblinTexture,
+                ["Fire Skull"] = fireSkullTexture,
+                ["Knight"] = knightTexture,
+                ["Orc"] = orcTexture,
+                ["Wraith"] = wraithTexture,
+                ["Skeleton"] = skellyTexture,
+                ["Skelly"] = skellyTexture,   
+                ["Witch"] = witchTexture,
+                ["Slime"] = slimeTexture,
+                ["Rectangle"] = rectangleTexure 
+            };
 
             _font = Content.Load<SpriteFont>("TitleFont");
             _battleFont = Content.Load<SpriteFont>("BattleFont");
@@ -398,11 +416,35 @@ namespace Movement_and_SpriteSheet_together
                 var hero = _battleSystem.Hero;
                 var enemy = _battleSystem.Enemy;
 
+                // Draw player hero on left
                 _spriteBatch.Draw(battleHeroTexture, battleHeroRect, Color.White);
+
+                // Draw enemy image based on enemy.Name
+                if (enemy != null)
+                {
+                    var tex = GetEnemyTextureByName(enemy.Name);
+                    if (tex != null)
+                    {
+                        // Fit enemy image into a compact rectangle on the right side of the screen.
+                        const int maxSize = 60;
+                        float scale = Math.Min(maxSize / (float)Math.Max(1, tex.Width), maxSize / (float)Math.Max(1, tex.Height));
+                        int drawW = (int)(tex.Width * scale);
+                        int drawH = (int)(tex.Height * scale);
+
+                        // Position near the existing text area (adjust as needed)
+                        var enemyRect = new Rectangle(450, 190, drawW, drawH);
+                        _spriteBatch.Draw(tex, enemyRect, Color.White);
+                    }
+                    else
+                    {
+                        // fallback: draw placeholder rectangle texture
+                        _spriteBatch.Draw(rectangleTexure, new Rectangle(450, 140, 96, 96), Color.White);
+                    }
+                }
 
                 _spriteBatch.DrawString(_battleFont, $"HP: {hero.HP}", new Vector2(158, 240), Color.White);
 
-                _spriteBatch.DrawString(_battleFont, $"Name: {enemy.Name} HP: {enemy.HP}", new Vector2(450, 190), Color.White);
+                _spriteBatch.DrawString(_battleFont, $"HP: {enemy.HP}", new Vector2(450, 240), Color.White);
                 
                 if (_battleSystem.State == BattleState.PlayerTurn || _battleSystem.State == BattleState.EnemyTurn)
                     _spriteBatch.DrawString(_battleFont, $"Turn: {_battleSystem.State}", new Vector2(50, 50), Color.Yellow);
@@ -429,6 +471,19 @@ namespace Movement_and_SpriteSheet_together
             }
 
             base.Draw(gameTime);
+        }
+
+        /// <summary>
+        /// Return the texture that matches the enemy name (case-insensitive).
+        /// Returns null when no mapping exists.
+        /// </summary>
+        private Texture2D GetEnemyTextureByName(string name)
+        {
+            if (string.IsNullOrEmpty(name) || _enemyTextures == null)
+                return null;
+
+            _enemyTextures.TryGetValue(name, out var tex);
+            return tex;
         }
 
         private void LoadLevel(GameState level)
