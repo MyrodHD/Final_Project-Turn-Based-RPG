@@ -43,16 +43,17 @@ namespace Movement_and_SpriteSheet_together
         Texture2D heroTexture;
         Texture2D enemyTexture;
         Texture2D backgroundTexture;
+        Texture2D battleBackgroundTexture;
+        Texture2D mainMenuTexture;
 
         Texture2D battleHeroTexture;
-        Texture2D fireSkullTexture;
-        Texture2D goblinTexture;
-        Texture2D knightTexture;
-        Texture2D orcTexture;
-        Texture2D skellyTexture;
-        Texture2D slimeTexture;
-        Texture2D witchTexture;
-        Texture2D wraithTexture;
+        Texture2D beeTexture;
+        Texture2D boarTexture;
+        Texture2D snowmanTexture;
+        Texture2D mushroomTexture;
+        Texture2D piggyTexture;
+        Texture2D skeletonTexture;
+        Texture2D witchDoctorTexture;
 
         // map enemy name -> texture (case-insensitive)
         private Dictionary<string, Texture2D> _enemyTextures;
@@ -63,12 +64,16 @@ namespace Movement_and_SpriteSheet_together
         SpriteFont _font;
         SpriteFont _battleFont;
         SpriteFont _menuFont;
+        SpriteFont _victoryFont;
 
         Hero _hero;
 
         Song menuSound;
         Song gameSound;
         Song attackSound;
+
+        // track currently playing song so we don't force-restart the same song repeatedly
+        private Song _currentlyPlayingSong;
 
         BattleSystem _battleSystem;
         private bool _battleStarted = false;
@@ -118,37 +123,37 @@ namespace Movement_and_SpriteSheet_together
             particleTexure = Content.Load<Texture2D>("circle");
             backgroundTexture = Content.Load<Texture2D>("Overworld");
             battleHeroTexture = Content.Load<Texture2D>("Enemies/blonde");
-            fireSkullTexture = Content.Load<Texture2D>("Enemies/fire_skull-final");
-            goblinTexture = Content.Load<Texture2D>("Enemies/goblin-final");
-            knightTexture = Content.Load<Texture2D>("Enemies/knight-final");
-            orcTexture = Content.Load<Texture2D>("Enemies/orc-final");
-            skellyTexture = Content.Load<Texture2D>("Enemies/skelly-final");
-            slimeTexture = Content.Load<Texture2D>("Enemies/slime-final");
-            witchTexture = Content.Load<Texture2D>("Enemies/witch-final");
-            wraithTexture = Content.Load<Texture2D>("Enemies/wraith-final");
+            beeTexture = Content.Load<Texture2D>("Enemies/Bee_Idle");
+            boarTexture = Content.Load<Texture2D>("Enemies/Boar_Idle");
+            snowmanTexture = Content.Load<Texture2D>("Enemies/Christmas_Snowman_G_Idle");
+            mushroomTexture = Content.Load<Texture2D>("Enemies/Mushroom_Reg");
+            piggyTexture = Content.Load<Texture2D>("Enemies/Piggy_Idle");
+            skeletonTexture = Content.Load<Texture2D>("Enemies/Skeleton_Idle");
+            witchDoctorTexture = Content.Load<Texture2D>("Enemies/Witch_Doctor_Idle");
+            battleBackgroundTexture = Content.Load<Texture2D>("Battle_Arena");
+            mainMenuTexture = Content.Load<Texture2D>("Main_Menu");
 
             // Build a lookup so we can draw the correct texture for the current enemy.
             _enemyTextures = new Dictionary<string, Texture2D>(StringComparer.OrdinalIgnoreCase)
             {
-                ["Goblin"] = goblinTexture,
-                ["Fire Skull"] = fireSkullTexture,
-                ["Knight"] = knightTexture,
-                ["Orc"] = orcTexture,
-                ["Wraith"] = wraithTexture,
-                ["Skeleton"] = skellyTexture,
-                ["Skelly"] = skellyTexture,   
-                ["Witch"] = witchTexture,
-                ["Slime"] = slimeTexture,
-                ["Rectangle"] = rectangleTexure 
+                ["Snowman"] = snowmanTexture,
+                ["Boar"] = boarTexture,
+                ["Bee"] = beeTexture,
+                ["Piggy"] = piggyTexture,
+                ["Mushroom"] = mushroomTexture,
+                ["Witch Doctor"] = witchDoctorTexture,
+                ["Skeleton"] = skeletonTexture,   
             };
 
             _font = Content.Load<SpriteFont>("TitleFont");
             _battleFont = Content.Load<SpriteFont>("BattleFont");
             _menuFont = Content.Load<SpriteFont>("BattleMenu");
+            _victoryFont = Content.Load<SpriteFont>("VictoryScreen");
 
             menuSound = Content.Load<Song>("Music/Menu_music");
             gameSound = Content.Load<Song>("Music/Game_music");
-            attackSound = Content.Load<Song>("Music/Battle_music");
+
+            PlaySong(menuSound, repeating: true, volume: 0.6f);
 
             List<string> menuItems = new List<string> { "Start Game", "Controls" };
             
@@ -358,6 +363,7 @@ namespace Movement_and_SpriteSheet_together
             if (_currentState == GameState.MainMenu)
             {
                 _spriteBatch.Begin();
+                _spriteBatch.Draw(mainMenuTexture, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
                 _menuManager.Draw(_spriteBatch);
                 _spriteBatch.End();
 
@@ -416,6 +422,10 @@ namespace Movement_and_SpriteSheet_together
                 var hero = _battleSystem.Hero;
                 var enemy = _battleSystem.Enemy;
 
+                MediaPlayer.Play(attackSound);
+
+                _spriteBatch.Draw(battleBackgroundTexture, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
+
                 // Draw player hero on left
                 _spriteBatch.Draw(battleHeroTexture, battleHeroRect, Color.White);
 
@@ -426,7 +436,7 @@ namespace Movement_and_SpriteSheet_together
                     if (tex != null)
                     {
                         // Fit enemy image into a compact rectangle on the right side of the screen.
-                        const int maxSize = 60;
+                        const int maxSize = 95;
                         float scale = Math.Min(maxSize / (float)Math.Max(1, tex.Width), maxSize / (float)Math.Max(1, tex.Height));
                         int drawW = (int)(tex.Width * scale);
                         int drawH = (int)(tex.Height * scale);
@@ -444,7 +454,7 @@ namespace Movement_and_SpriteSheet_together
 
                 _spriteBatch.DrawString(_battleFont, $"HP: {hero.HP}", new Vector2(158, 240), Color.White);
 
-                _spriteBatch.DrawString(_battleFont, $"HP: {enemy.HP}", new Vector2(450, 240), Color.White);
+                _spriteBatch.DrawString(_battleFont, $"HP: {enemy.HP}", new Vector2(475, 255), Color.White);
                 
                 if (_battleSystem.State == BattleState.PlayerTurn || _battleSystem.State == BattleState.EnemyTurn)
                     _spriteBatch.DrawString(_battleFont, $"Turn: {_battleSystem.State}", new Vector2(50, 50), Color.Yellow);
@@ -454,8 +464,14 @@ namespace Movement_and_SpriteSheet_together
                 if (_battleSystem.State == BattleState.PlayerTurn)
                     _battleMenu.Draw(_spriteBatch, Color.White, Color.Yellow);
 
+                if(_battleSystem.State == BattleState.Win)
+                    _spriteBatch.DrawString(_victoryFont, "You Win!", new Vector2(280, 200), Color.Green);
+
+                if (_battleSystem.State == BattleState.Lose)
+                    _spriteBatch.DrawString(_victoryFont, "You Lose!", new Vector2(280, 200), Color.Red);
+
                 if (_battleSystem.State == BattleState.Win || _battleSystem.State == BattleState.Lose)
-                    _spriteBatch.DrawString(_battleFont, "Press R to Exit battle", new Vector2(50,305), Color.White);
+                    _spriteBatch.DrawString(_battleFont, "Press R to Exit battle", new Vector2(280,245), Color.White);
 
                 // Draw HUD with Level / XP so you can verify XP changes while playing.
                 if (_hero != null && _currentState != GameState.MainMenu)
@@ -490,6 +506,8 @@ namespace Movement_and_SpriteSheet_together
         {
             _movement = new MovementManager(_levelManager.GetSpawnPointForLevel(level), _particleSystem);
             _encounters = _encounterManager.GetEncountersForLevel(level);
+
+            PlaySong(gameSound, repeating: true, volume: 0.6f);
         }
         
         private void ResetGame()
@@ -558,6 +576,27 @@ namespace Movement_and_SpriteSheet_together
             float maxY = System.MathF.Max(0, WorldHeight - GraphicsDevice.Viewport.Height);
             _cameraPosition.X = MathHelper.Clamp(_cameraPosition.X, 0, maxX);
             _cameraPosition.Y = MathHelper.Clamp(_cameraPosition.Y, 0, maxY);
+        }
+
+        private void PlaySong(Song song, bool repeating = true, float volume = 1f)
+        {
+            if (song == null)
+                return;
+
+            // avoid restarting the same song repeatedly
+            if (_currentlyPlayingSong == song && MediaPlayer.State == MediaState.Playing)
+                return;
+
+            MediaPlayer.IsRepeating = repeating;
+            MediaPlayer.Volume = MathHelper.Clamp(volume, 0f, 1f);
+            MediaPlayer.Play(song);
+            _currentlyPlayingSong = song;
+        }
+
+        private void StopSong()
+        {
+            MediaPlayer.Stop();
+            _currentlyPlayingSong = null;
         }
     }
 }
