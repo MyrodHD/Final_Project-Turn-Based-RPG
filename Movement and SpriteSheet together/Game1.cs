@@ -422,8 +422,6 @@ namespace Movement_and_SpriteSheet_together
                 var hero = _battleSystem.Hero;
                 var enemy = _battleSystem.Enemy;
 
-                MediaPlayer.Play(attackSound);
-
                 _spriteBatch.Draw(battleBackgroundTexture, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
 
                 // Draw player hero on left
@@ -436,13 +434,13 @@ namespace Movement_and_SpriteSheet_together
                     if (tex != null)
                     {
                         // Fit enemy image into a compact rectangle on the right side of the screen.
-                        const int maxSize = 95;
+                        const int maxSize = 130;
                         float scale = Math.Min(maxSize / (float)Math.Max(1, tex.Width), maxSize / (float)Math.Max(1, tex.Height));
                         int drawW = (int)(tex.Width * scale);
                         int drawH = (int)(tex.Height * scale);
 
                         // Position near the existing text area (adjust as needed)
-                        var enemyRect = new Rectangle(450, 190, drawW, drawH);
+                        var enemyRect = new Rectangle(400, 140, drawW, drawH);
                         _spriteBatch.Draw(tex, enemyRect, Color.White);
                     }
                     else
@@ -452,9 +450,9 @@ namespace Movement_and_SpriteSheet_together
                     }
                 }
 
-                _spriteBatch.DrawString(_battleFont, $"HP: {hero.HP}", new Vector2(158, 240), Color.White);
+                _spriteBatch.DrawString(_battleFont, $"HP: {hero.HP}", new Vector2(158, 225), Color.White);
 
-                _spriteBatch.DrawString(_battleFont, $"HP: {enemy.HP}", new Vector2(475, 255), Color.White);
+                _spriteBatch.DrawString(_battleFont, $"HP: {enemy.HP}", new Vector2(429, 244), Color.White);
                 
                 if (_battleSystem.State == BattleState.PlayerTurn || _battleSystem.State == BattleState.EnemyTurn)
                     _spriteBatch.DrawString(_battleFont, $"Turn: {_battleSystem.State}", new Vector2(50, 50), Color.Yellow);
