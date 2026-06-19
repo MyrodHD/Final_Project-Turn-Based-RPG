@@ -358,7 +358,7 @@ namespace Movement_and_SpriteSheet_together
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.DarkGray);
 
             if (_currentState == GameState.MainMenu)
             {
@@ -434,13 +434,13 @@ namespace Movement_and_SpriteSheet_together
                     if (tex != null)
                     {
                         // Fit enemy image into a compact rectangle on the right side of the screen.
-                        const int maxSize = 130;
+                        const int maxSize = 115;
                         float scale = Math.Min(maxSize / (float)Math.Max(1, tex.Width), maxSize / (float)Math.Max(1, tex.Height));
                         int drawW = (int)(tex.Width * scale);
                         int drawH = (int)(tex.Height * scale);
 
                         // Position near the existing text area (adjust as needed)
-                        var enemyRect = new Rectangle(400, 140, drawW, drawH);
+                        var enemyRect = new Rectangle(400, 145, drawW, drawH);
                         _spriteBatch.Draw(tex, enemyRect, Color.White);
                     }
                     else
@@ -452,7 +452,7 @@ namespace Movement_and_SpriteSheet_together
 
                 _spriteBatch.DrawString(_battleFont, $"HP: {hero.HP}", new Vector2(158, 225), Color.White);
 
-                _spriteBatch.DrawString(_battleFont, $"HP: {enemy.HP}", new Vector2(429, 244), Color.White);
+                _spriteBatch.DrawString(_battleFont, $"HP: {enemy.HP}", new Vector2(429, 230), Color.White);
                 
                 if (_battleSystem.State == BattleState.PlayerTurn || _battleSystem.State == BattleState.EnemyTurn)
                     _spriteBatch.DrawString(_battleFont, $"Turn: {_battleSystem.State}", new Vector2(50, 50), Color.Yellow);
@@ -460,16 +460,16 @@ namespace Movement_and_SpriteSheet_together
                 _spriteBatch.DrawString(_battleFont, $"Action: {_battleSystem.LastAction}", new Vector2(50, 70), Color.White);
 
                 if (_battleSystem.State == BattleState.PlayerTurn)
-                    _battleMenu.Draw(_spriteBatch, Color.White, Color.Yellow);
+                    _battleMenu.Draw(_spriteBatch, Color.DarkGray, Color.Black);
 
                 if(_battleSystem.State == BattleState.Win)
-                    _spriteBatch.DrawString(_victoryFont, "You Win!", new Vector2(280, 200), Color.Green);
+                    _spriteBatch.DrawString(_victoryFont, "You Win!", new Vector2(265, 200), Color.Green);
 
                 if (_battleSystem.State == BattleState.Lose)
-                    _spriteBatch.DrawString(_victoryFont, "You Lose!", new Vector2(280, 200), Color.Red);
+                    _spriteBatch.DrawString(_victoryFont, "You Lose!", new Vector2(265, 200), Color.Red);
 
                 if (_battleSystem.State == BattleState.Win || _battleSystem.State == BattleState.Lose)
-                    _spriteBatch.DrawString(_battleFont, "Press R to Exit battle", new Vector2(280,245), Color.White);
+                    _spriteBatch.DrawString(_battleFont, "Press R to Exit battle", new Vector2(265,245), Color.White);
 
                 // Draw HUD with Level / XP so you can verify XP changes while playing.
                 if (_hero != null && _currentState != GameState.MainMenu)
